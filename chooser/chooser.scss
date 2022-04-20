@@ -1,0 +1,43 @@
+.app {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+.wrap {
+  width: 300px;
+}
+
+.chooser {
+  position: relative;
+  width: 100%;
+
+  &__current,
+  &__item {
+    cursor: pointer;
+  }
+
+  &__list {
+    position: absolute;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: none;
+    list-style: none;
+  }
+
+  &.open {
+    .chooser__list {
+      display: block;
+    }
+  }
+
+}
+
+[data-chooser_type="current"] {
+  pointer-events: none;
+}
