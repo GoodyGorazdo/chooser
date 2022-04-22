@@ -8,6 +8,7 @@
 }
 
 .chooser__current {
+  position: relative;
   font-family: inherit;
   font-size: inherit;
 }

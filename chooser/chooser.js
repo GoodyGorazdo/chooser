@@ -1,30 +1,90 @@
 /**
-   const select = new Chooser({
-    el: 'filter',                                       Root element Id
-    placeholder: 'some_placeholder',                    default "choser"
-    current: 2,
+  Start
+  To start, just copy the chooser.js and chooser.css files.
+  Then connect them to the head of your html file
+
+  <script defer="defer" src="chooser.js"></script>
+  <link href="chooser.css" rel="stylesheet">
+
+  Then connect your file with scripts, such as scripts.js
+  <script defer="defer" src="scripts.js"></script>
+
+  and create a new Chooser instance in your file using the object with the settings.
+
+  Example of a settings object
+
+  const options = {
+    el: 'select',
+    placeholder: 'Сортировка',
+    // current: 2,
     data: [
       {
-        value: 'По номеру',
-        attr: {                                         any attributes can be added (key - value)
-          id: 'id',
-          'data-some_attr': 'some_value',
-        },
-        chooserId: 'some_unique_id',                    chooser id is assigned automatically by the index of the item in the array.
-                                                        If necessary, you can reassign it.
-                                                        Used to select an element and focus on an element:
-                                                        (select.select (chooserId), select.focuse (chooserId)).
+        value: 'some_value',
+        attr: {
+          'some_attr': 'some_value'
+        }
       },
-
-      { value: 'По балансу' },
-      { value: 'По последней транзакции' },
+      { value: 'some_value' },
+      { value: 'some_value' },
     ],
     classList: {
-      current: 'some-class__current',
+      label: 'some-class__label',
+      wrapper: 'some-class__wrapper',
+      current: 'some-class__button',
       list: 'some-class__list',
       item: 'some-class__item',
     }
-  });
+  }
+
+  const select = new Chooser(options);
+
+
+  Complete list of settings
+
+  const select = new Chooser({
+  el: 'filter',
+      -- 'el': Root element Id
+  placeholder: 'some_placeholder',
+      -- 'placeholder': default "choser"
+  current: 2,
+  label: 'some_label'
+      -- 'label': default "Выберите элемент:". required element. is an ARIA lable
+  data: [
+    {
+      value: 'some_value',
+      attr: {
+        'some_attr': 'some_value',
+        'some_attr': 'some_value',
+        'some_attr': 'some_value',
+          -- 'attr': any attributes can be added (key - value)
+      },
+      id: 'some_unique_id'
+          -- 'id': item id is assigned automatically by the index of the item in the array.
+              If necessary, you can reassign it.
+              Used to select an element and focus on an element:
+              (select.select (chooserId), select.focuse (chooserId)).
+    },
+
+    {
+      value: 'some_value',
+      attr: {
+        'some_attr': 'some_value',
+        'some_attr': 'some_value',
+        'some_attr': 'some_value',
+      },
+      id: 'some_unique_id'
+    },
+
+    { value: 'some_value' },
+  ],
+  classList: {
+    label: 'some-class__label',
+    wrapper: 'some-class__wrapper',
+    current: 'some-class__button',
+    list: 'some-class__list',
+    item: 'some-class__item',
+  }
+});
 
   Aattributes
 
@@ -51,9 +111,10 @@ const getTemplate = (props) => {
     return /*html*/`
       <li
         class="${props.classList.item ?? ''} chooser__item"
+        id="${dataId}"
         ${attr}
         data-chooser_type="chooser_item"
-        data-chooser_id="${dataId}"
+        role="option"
       >
         ${item.value}
       </li>
@@ -61,17 +122,33 @@ const getTemplate = (props) => {
   }).join('');
 
   return /*html*/`
-        <button
-          class="${props.classList.current ?? ''} chooser__current"
-          data-chooser_current
-          data-chooser_type="chooser_button"
-          data-chooser_no_close=${props.el}
+        <span
+          id="${props.el}_desc"
+          class="${props.classList.label ?? ''} chooser__desc"
         >
-            ${props.placeholder}
-        </button>
-        <ul class="${props.classList.list ?? ''} chooser__list">
-            ${items}
-        </ul>
+          ${props.label ?? "Выберите элемент:"}
+        </span>
+        <div class="${props.classList.wrapper ?? ''} chooser__wrapper">
+          <button
+            class="${props.classList.current ?? ''} chooser__current"
+            id="${props.el}_button"
+            data-chooser_current
+            data-chooser_type="chooser_button"
+            data-chooser_no_close=${props.el}
+            aria-labelledby="${props.el}_desc ${props.el}_button"
+            aria-haspopup="listbox"
+          >
+              ${props.placeholder}
+          </button>
+          <ul
+            class="${props.classList.list ?? ''} chooser__list"
+            role="listbox"
+            tabindex="-1"
+            aria-labelledby="${props.el}_desc"
+          >
+              ${items}
+          </ul>
+        </div>
   `;
 }
 
@@ -116,8 +193,7 @@ export class Chooser {
     if (chooser_type == 'chooser_button') {
       this.toggle();
     } else if (chooser_type == 'chooser_item') {
-      const id = event.target.dataset.chooser_id;
-      this.select(id);
+      this.select(event.target.id);
     }
   }
 
@@ -128,11 +204,15 @@ export class Chooser {
   select(id) {
     this.activeDescendant = id;
     this.$current.textContent = this.current.value;
-
     this.$el.querySelectorAll('[data-chooser_type="chooser_item"]')
-      .forEach(item => item.classList.remove('chooser_selected'));
-    this.$el.querySelector(`[data-chooser_id="${id}"]`).classList.add('chooser_selected');
-
+      .forEach(item => {
+        item.classList.remove('chooser_selected');
+        item.removeAttribute('aria-selected');
+      });
+    const currentEl = this.$el.querySelector(`#${id}`);
+    currentEl.classList.add('chooser_selected');
+    currentEl.setAttribute('aria-selected', true);
+    this.$list.setAttribute('aria-activedescendant', id);
     this.close();
   }
 
@@ -167,8 +247,9 @@ export class Chooser {
   }
 
   focus(id) {
+    console.log(id);
     this.defocus();
-    const item = this.$el.querySelector(`[data-chooser_id="${id}"]`);
+    const item = this.$el.querySelector(`#${id}`);
     if (item) item.classList.add("focused");
     this.focused = id;
   }
@@ -204,15 +285,12 @@ export class Chooser {
   }
 
   #onKeyUpOrDown(type) {
-    let nowCurrent = document.querySelector(
-      `[data-chooser_id=${this.focused}]`
-    );
+    let nowCurrent = this.$el.querySelector(`#${this.focused}`);
     let checkNewCurrent = type == "ArrowDown"
       ? this.#onKeyNextCurrent(nowCurrent)
       : this.#onKeyNextCurrent(nowCurrent, 1);
     if (checkNewCurrent) {
-      const { chooser_id } = checkNewCurrent.dataset;
-      this.focus(chooser_id);
+      this.focus(checkNewCurrent.id);
       return true;
     } else {
       type == "ArrowDown"
