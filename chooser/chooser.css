@@ -1,0 +1,33 @@
+.chooser {
+  position: relative;
+}
+
+.chooser__current,
+.chooser__item {
+  cursor: pointer;
+}
+
+.chooser__current {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.chooser__list {
+  position: absolute;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  /* display: none; */
+  list-style: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.chooser.open .chooser__list {
+  opacity: 1;
+  visibility: visible;
+}
+
+[data-chooser_type="current"] {
+  pointer-events: none;
+}
