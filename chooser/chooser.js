@@ -15,7 +15,7 @@
 
   const options = {
     el: 'select',
-    placeholder: 'Сортировка',
+    placeholder: 'placeholder',
     current: 2,
     data: [
       {
@@ -50,7 +50,7 @@
       -- active item on start
   label: 'some_label'
       -- 'label': default "Выберите элемент:". required element. is an ARIA lable
-  group: 'convertings'
+  group: 'some_group'
       -- add group to hide the names of one group
   data: [
     {
@@ -66,7 +66,7 @@
               If necessary, you can reassign it.
               Used to select an element and focus on an element:
               (select.select (chooserId), select.focuse (chooserId)).
-      itemGroup: 'some_name',
+      group: 'some_name',
           -- add group to hide the names of one group
     },
 
@@ -121,7 +121,7 @@ const getTemplate = (props) => {
       const check = document.querySelectorAll(`[data-chooser_group="${props.data[ind].group}"]`);
       if (check) {
         check.forEach(item => {
-          if(item.classList.contains('selected')) disabled = true;
+          if (item.classList.contains('selected')) disabled = true;
         });
       }
     }
@@ -182,7 +182,6 @@ const getTemplate = (props) => {
         </div>
   `;
 }
-
 
 export class Chooser {
   constructor(props) {
@@ -281,11 +280,25 @@ export class Chooser {
     }
   }
 
+  get yPos() {
+    const padding = window.getComputedStyle(this.$list).padding.split('px')[0] * 2;
+    const additional = padding + this.$list.offsetTop;
+    const height =
+      this.$list.getBoundingClientRect().top
+      + this.$list.getBoundingClientRect().height
+      + additional;
+    return height > window.screen.height;
+  }
+
   open() {
     this.isOpen = true;
     this.$open.forEach(el => el.classList.add('open'));
     document.addEventListener('click', this.checkMiss);
     this.$list.addEventListener("mouseenter", this.defocus);
+    if (this.yPos) {
+      this.$list.style.bottom = window.getComputedStyle(this.$list).top;
+      this.$list.style.top = 'unset';
+    }
   }
 
   close() {
@@ -293,6 +306,7 @@ export class Chooser {
     this.$open.forEach(el => el.classList.remove('open'));
     document.removeEventListener('click', this.checkMiss);
     this.defocus();
+    this.$list.removeAttribute('style');
   }
 
   destroy() {
