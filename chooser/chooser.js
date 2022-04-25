@@ -232,7 +232,7 @@ export class Chooser {
     if (chooser_type == 'chooser_button') {
       this.#toggle();
     } else if (chooser_type == 'chooser_item') {
-      this.select(event.target.id, event.target);
+      this.select(event.target.id);
       this.close();
     }
   }
@@ -241,7 +241,7 @@ export class Chooser {
     return this.props.data.find(item => item.id == this.activeDescendant);
   }
 
-  select(id, target) {
+  select(id) {
     this.activeDescendant = id;
     const item = this.current;
     this.$current.textContent = item.value;
@@ -281,13 +281,10 @@ export class Chooser {
   }
 
   get yPos() {
-    const padding = window.getComputedStyle(this.$list).padding.split('px')[0] * 2;
-    const additional = padding + this.$list.offsetTop;
-    const height =
-      this.$list.getBoundingClientRect().top
-      + this.$list.getBoundingClientRect().height
-      + additional;
-    return height > window.screen.height;
+    return (
+      this.$list.getBoundingClientRect().bottom
+        > document.documentElement.clientHeight
+    )
   }
 
   open() {
