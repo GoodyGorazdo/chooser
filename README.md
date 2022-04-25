@@ -49,9 +49,9 @@
   placeholder: 'some_placeholder',
 //    -- 'placeholder': default "choser"
   current: 2,
-  group: 'some_group'
+  group: 'some_group',
 //    -- add group to hide the names of one group
-  label: 'some_label'
+  label: 'some_label',
 //    -- 'label': default "Выберите элемент:". required element. is an ARIA lable
   data: [
     {
@@ -62,7 +62,7 @@
         'some_attr': 'some_value',
 //        -- 'attr': any attributes can be added (key - value)
       },
-      id: 'some_unique_id'
+      id: 'some_unique_id',
 //        -- 'id': item id is assigned automatically by the index of the item in the array.
 //            If necessary, you can reassign it.
 //            Used to select an element and focus on an element:
