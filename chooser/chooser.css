@@ -1,10 +1,15 @@
-.chooser {
+.chooser__wrapper {
   position: relative;
+  display: inline-block;
 }
 
 .chooser__current,
 .chooser__item {
   cursor: pointer;
+}
+
+.chooser__item.disabled {
+  pointer-events: none;
 }
 
 .chooser__current {
@@ -16,19 +21,21 @@
 .chooser__list {
   position: absolute;
   width: 100%;
-  margin: 0;
-  padding: 0;
   /* display: none; */
   list-style: none;
   opacity: 0;
   visibility: hidden;
 }
 
-.chooser.open .chooser__list {
+.chooser__list.open {
   opacity: 1;
   visibility: visible;
+  z-index: 9999;
 }
 
-[data-chooser_type="current"] {
+[data-chooser_current] {
+  width: 100%;
+  display: inline-block;
   pointer-events: none;
 }
+
