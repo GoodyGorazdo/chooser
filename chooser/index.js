@@ -138,7 +138,7 @@ const li = (props, item, ind, chooser, list, selected) => {
 
   let disabled = false;
   if (item.group || props.group) {
-    props.data[ind].group = item.group ? item.group : `${props.group}_${ind}`;
+    props.data[ind].group = item.group ? item.group : `${props.group}_${ind + 1}`;
 
     const check = document.querySelectorAll(`[data-chooser_group="${props.data[ind].group}"]`);
     if (check) {
