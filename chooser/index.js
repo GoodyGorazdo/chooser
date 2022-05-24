@@ -40,7 +40,7 @@
   Complete list of settings
 
   const select = new Chooser({
-  el: 'filter',
+  el: 'element',
       -- 'el': Root element Id
   placeholder: 'some_placeholder',
       -- 'placeholder': default "choser"
@@ -56,10 +56,10 @@
         -- if true - filters the items according to the entered line
       numbers: true,
         -- if true - only numbers can be entered in the input
-      id: 'recipient',
+      id: 'some id',
       attr: {
         type: 'text',
-        placeholder: 'Введите номер счёта',
+        placeholder: 'placeholder',
       },
     },
   data: [
@@ -402,9 +402,10 @@ class Chooser {
     this.focused = e.target.id;
   }
 
-  removeHover(e) {
+  removeHover() {
     this.focused = null;
-    e.target.classList.remove('hover');
+    const el = document.querySelector('.hover');
+    if (el) el.classList.remove('hover');
   }
 
   open() {
@@ -427,6 +428,7 @@ class Chooser {
     this.$list.removeEventListener('mouseover', this.addHover);
     this.$list.removeEventListener('mouseout', this.removeHover);
     this.defocus();
+    this.removeHover();
     if (this.$list.hasAttribute('style')) {
       this.$list.removeAttribute('style');
     }

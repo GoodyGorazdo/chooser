@@ -120,5 +120,3 @@ const selectWithInput = new Chooser({
     item: 'some-section__item select__item',
   },
 });
-
-window.s = select;

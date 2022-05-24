@@ -4,12 +4,15 @@
 # Start
   To start, just copy the `chooser.js` and `chooser.css` files.
   Then connect them to the head of your html file
-
+  ```html
   <script defer="defer" src="chooser.js"></script>
   <link href="chooser.css" rel="stylesheet">
+  ```
 
   Then connect your file with scripts, such as `scripts.js`
+  ```html
   <script defer="defer" src="scripts.js"></script>
+  ```
 
   and create a new Chooser instance in your file using the object with the settings.
 
@@ -128,9 +131,9 @@ const select = new Chooser({
   `data-chooser_no_close=${id}` // do not close this.checkMiss(event);
 ```
 #  Classes
-  hover       - stylizing the state of hover
-  focused     - stylizing the state of focus when accessing from the keyboard
-  selected    - stylizing the state of selected item
-  disabled    - stylizing the state of disabled item
+  * hover       - stylizing the state of hover
+  * focused     - stylizing the state of focus when accessing from the keyboard
+  * selected    - stylizing the state of selected item
+  * disabled    - stylizing the state of disabled item
                 (is automatically added to all items in the group except the selected)
                 it with this class becomes selectable and skipped when selected from the keyboard
