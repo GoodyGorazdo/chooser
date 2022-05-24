@@ -21,19 +21,20 @@
 .chooser__list {
   position: absolute;
   width: 100%;
-  /* display: none; */
+  display: none;
   list-style: none;
   opacity: 0;
   visibility: hidden;
 }
 
 .chooser__list.open {
+  display: block;
   opacity: 1;
   visibility: visible;
   z-index: 9999;
 }
 
-[data-chooser_current] {
+[data-chooser_current]:not(.chooser__input) {
   width: 100%;
   display: inline-block;
   pointer-events: none;

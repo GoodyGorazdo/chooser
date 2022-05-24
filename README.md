@@ -18,7 +18,7 @@
   const options = {
     el: 'select',
     placeholder: 'some_placeholder',
-    // current: 2,
+    current: 2,
     data: [
       {
         value: 'some_value',
@@ -43,16 +43,29 @@
 
 # Complete list of settings
 ```js
-  const select = new Chooser({
-  el: 'filter',
-//    -- 'el': Root element Id
+const select = new Chooser({
+  el: 'element',
+      // -- 'el': Root element Id
   placeholder: 'some_placeholder',
-//    -- 'placeholder': default "choser"
+      // -- 'placeholder': default "choser"
   current: 2,
-  group: 'some_group',
-//    -- add group to hide the names of one group
+      // -- active item on start
   label: 'some_label',
-//    -- 'label': default "Выберите элемент:". required element. is an ARIA lable
+      // -- 'label': default "Выберите элемент:". required element. is an ARIA lable
+  group: 'some_group',
+      // -- add group to hide the names of one group
+  input: {
+      // -- activate input elment instead of button in header
+      filter: true,
+        // -- if true - filters the items according to the entered line
+      numbers: true,
+        // -- if true - only numbers can be entered in the input
+      id: 'some id',
+      attr: {
+        type: 'text',
+        placeholder: 'placeholder',
+      },
+    },
   data: [
     {
       value: 'some_value',
@@ -60,16 +73,23 @@
         'some_attr': 'some_value',
         'some_attr': 'some_value',
         'some_attr': 'some_value',
-//        -- 'attr': any attributes can be added (key - value)
+          // -- 'attr': any attributes can be added (key - value)
       },
+
       id: 'some_unique_id',
-//        -- 'id': item id is assigned automatically by the index of the item in the array.
-//            If necessary, you can reassign it.
-//            Used to select an element and focus on an element:
-//            (select.select (chooserId), select.focuse (chooserId)).
+          // -- 'id': item id is assigned automatically by the index of the item in the array.
+          //    If necessary, you can reassign it.
+          //    Used to select an element and focus on an element:
+          //    (select.select (chooserId), select.focuse (chooserId)).
+
       group: 'some_name',
-//        -- add group to hide the names of one group
-   },
+          // -- add group to hide the names of one group
+
+      onClick(item) {
+          someFunction(item);
+         }
+        // -- the function will be executed during the click of the item
+    },
 
     {
       value: 'some_value',
@@ -90,6 +110,17 @@
     list: 'some-class__list',
     item: 'some-class__item',
   }
+
+  onSetUp(items) {
+      someFunction(items);
+    },
+      // -- function will be executed during initialization
+
+  onSelect(item) {
+    someFunction(item);
+  }
+    // -- the function will be executed during the selection of the item
+
 });
 ```
 #  Aattributes
@@ -97,8 +128,9 @@
   `data-chooser_no_close=${id}` // do not close this.checkMiss(event);
 ```
 #  Classes
-  focused - stylizing the state of focus when accessing from the keyboard
-  selected - stylizing the state of selected item
-  disabled - stylizing the state of disabled item
-            (is automatically added to all items in the group except the selected)
-            it with this class becomes selectable and skipped when selected from the keyboard
+  hover       - stylizing the state of hover
+  focused     - stylizing the state of focus when accessing from the keyboard
+  selected    - stylizing the state of selected item
+  disabled    - stylizing the state of disabled item
+                (is automatically added to all items in the group except the selected)
+                it with this class becomes selectable and skipped when selected from the keyboard
