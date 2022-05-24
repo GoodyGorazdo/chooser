@@ -11,7 +11,7 @@
 
   Then connect your file with scripts, such as `scripts.js`
   ```html
-  <script defer="defer" src="scripts.js"></script>
+  <script defer="defer" src="index.js"></script>
   ```
 
   and create a new Chooser instance in your file using the object with the settings.
