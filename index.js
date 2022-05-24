@@ -29,7 +29,9 @@ const select1 = new Chooser({
     {
       value: '1',
       id: 'value_1',
-      'data-attr': 'a',
+      attr: {
+        'data-attr': 'a',
+      },
       group: 'some_name',
       onClick(item) {
         console.log('onClick: ')
@@ -39,7 +41,9 @@ const select1 = new Chooser({
     {
       value: '2',
       id: 'value_2',
-      'data-attr': 'b',
+      attr: {
+        'data-attr': 'b',
+      },
       onClick(item) {
         console.log('onClick: ')
         console.log(item);
@@ -48,7 +52,9 @@ const select1 = new Chooser({
     {
       value: '3',
       id: 'value_3',
-      'data-attr': 'c',
+      attr: {
+        'data-attr': 'c',
+      },
       onClick(item) {
         console.log('onClick: ')
         console.log(item);
@@ -57,7 +63,9 @@ const select1 = new Chooser({
     {
       value: '4',
       id: 'value_4',
-      'data-attr': 'd',
+      attr: {
+        'data-attr': 'd',
+      },
       onClick(item) {
         console.log('onClick: ')
         console.log(item);
@@ -66,7 +74,9 @@ const select1 = new Chooser({
     {
       value: '5',
       id: 'value_5',
-      'data-attr': 'e',
+      attr: {
+        'data-attr': 'e',
+      },
       onClick(item) {
         console.log('onClick item: ')
         console.log(item);
