@@ -9,7 +9,7 @@
   <link href="chooser.css" rel="stylesheet">
   ```
 
-  Then connect your file with scripts, such as `scripts.js`
+  Then connect your file with scripts, such as `index.js`
   ```html
   <script defer="defer" src="index.js"></script>
   ```
