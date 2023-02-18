@@ -393,7 +393,9 @@ class Chooser {
   }
 
   get $listBottomPos() {
-    return this.$list.getBoundingClientRect().bottom > document.documentElement.clientHeight;
+    return this.$list.getBoundingClientRect().bottom > document.documentElement.clientHeight
+      && this.$list.getBoundingClientRect().top > document.documentElement.clientHeight
+    ;
   }
 
   addHover(e) {
