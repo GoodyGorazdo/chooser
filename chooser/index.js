@@ -116,6 +116,11 @@
 
 });
 
+  Methods
+  select(index, true) - select element. 
+    @index - index needle element in ements array. 
+    @true - obligatory.
+
   Aattributes
 
   data-chooser_no_close=${id} - do not close this.checkMiss(event);
@@ -128,6 +133,8 @@
   disabled    - stylizing the state of disabled item
                 (is automatically added to all items in the group except the selected)
                 it with this class becomes selectable and skipped when selected from the keyboard
+                
+                
 
 */
 
@@ -351,7 +358,8 @@ class Chooser {
     }
   }
 
-  select(id) {
+  select(id, handler=false) {
+    if(handler) id = `${this.elId}_${id}`;
     if (this.props.onSelect) this.props.onSelect(this.data[id]);
     if (this.data[id].onClick) this.data[id].onClick(this.data[id]);
     this.activeDescendant = id;
