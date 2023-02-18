@@ -117,9 +117,13 @@
 });
 
   Methods
-  select(index, true) - select element. 
-    @index - index needle element in ements array. 
-    @true - obligatory.
+  
+  select(index, true) - select element; 
+    @index - index needle element in ements array;
+    @true - obligatory;
+    
+  getCurrentItem() - return current item;
+  
 
   Aattributes
 
@@ -298,6 +302,10 @@ class Chooser {
       this.$current.addEventListener('input', this.filterOnInput);
     }
     if (this.props.onSetUp) this.props.onSetUp(this.props.data);
+  }
+  
+  getCurrentItem() {
+    return this.current;
   }
 
   updateList(items) {
