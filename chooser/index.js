@@ -1,21 +1,19 @@
+
 /**
   Start
   First, just copy the chooser.js and chooser.css files to the project folder.
   Then connect them to the head of your html file
-
   <script defer="defer" src="/your/path/chooser.js"></script>
   <link href="/your/path/chooser.css" rel="stylesheet">
-
   Then connect your file with scripts, such as scripts.js
   <script defer="defer" src="scripts.js"></script>
-
   and create a new Chooser instance in your file using the object with the settings.
-
   Example of a settings object
   const options = {
     el: 'select',
     placeholder: 'placeholder',
     current: 2,
+    index: some_index,
     data: [
       {
         value: 'some_value',
@@ -35,13 +33,12 @@
     }
   }
   const select = new Chooser(options);
-
-
   Complete list of settings
-
   const select = new Chooser({
   el: 'element',
       -- 'el': Root element Id
+  index: some_index,
+      -- required, some unique index for convenience of choosing the side of the code
   placeholder: 'some_placeholder',
       -- 'placeholder': default "choser"
   current: 2,
@@ -71,21 +68,17 @@
         'some_attr': 'some_value',
           -- 'attr': any attributes can be added (key - value)
       },
-
       id: 'some_unique_id',
           -- 'id': item id is assigned automatically by the index of the item in the array.
               If necessary, you can reassign it.
               Used to select an element and focus on an element:
               (select.select (chooserId), select.focuse (chooserId)).
-
       group: 'some_name',
           -- add group to hide the names of one group
-
       onClick(item) {
           someFunction(item);
         } -- the function will be executed during the click of the item
     },
-
     {
       value: 'some_value',
       attr: {
@@ -95,7 +88,6 @@
       },
       id: 'some_unique_id'
     },
-
     { value: 'some_value' },
   ],
   classList: {
@@ -105,51 +97,42 @@
     list: 'some-class__list',
     item: 'some-class__item',
   }
-
   onSetUp(items) {
       someFunction(items);
     }, -- function will be executed during initialization
-
   onSelect(item) {
     someFunction(item);
   }  -- the function will be executed during the selection of the item
-
 });
-
   Methods
-  
-  select(index, true) - select element; 
+
+  select(index, true) - select element;
     @index - index needle element in ements array;
     @true - obligatory;
-    
+
   getCurrentItem() - return current item;
-  
 
   Aattributes
-
   data-chooser_no_close=${id} - do not close this.checkMiss(event);
-
   Classes
-
   hover       - stylizing the state of hover
   focused     - stylizing the state of focus when accessing from the keyboard
   selected    - stylizing the state of selected item
   disabled    - stylizing the state of disabled item
                 (is automatically added to all items in the group except the selected)
                 it with this class becomes selectable and skipped when selected from the keyboard
-                
-                
+
 
 */
 
 const li = (props, item, ind, chooser, list, selected) => {
-  const dataId = item.chooserId ?? `${props.el}_${ind + 1}`;
+  const dataId = item.chooserId ?? `${props.el}_${item.index}`;
   props.data[ind].id = dataId;
   if (selected) list.setAttribute('aria-activedescendant', dataId);
 
   let disabled = false;
   if (item.group || props.group) {
-    props.data[ind].group = item.group ? item.group : `${props.group}_${ind + 1}`;
+    props.data[ind].group = item.group ? item.group : `${props.group}_${item.index}`;
 
     const check = document.querySelectorAll(`[data-chooser_group="${props.data[ind].group}"]`);
     if (check) {
@@ -255,7 +238,7 @@ const getTemplate = (props, chooser) => {
   `;
 };
 
-class Chooser {
+export default class Chooser {
   constructor(props) {
     this.props = props;
     this.props.data = props.data.map((item) => ({ ...item }));
@@ -303,7 +286,11 @@ class Chooser {
     }
     if (this.props.onSetUp) this.props.onSetUp(this.props.data);
   }
-  
+
+  getItemID(item) {
+
+  }
+
   getCurrentItem() {
     return this.current;
   }
