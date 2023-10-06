@@ -248,7 +248,7 @@ export default class Chooser {
     this.elId = props.el;
     this.props.placeholder = props.placeholder ?? 'Chooser';
 
-    this.activeDescendant = props.current ? `${this.elId}_${props.current}` : null;
+    this.activeDescendant = props.current ? (props.data[props.current - 1].id ?? `${this.elId}_${props.current - 1 }`) : null;
     this.activeGroup = null;
     this.isOpen = false;
     this.focused = null;
