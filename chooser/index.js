@@ -126,7 +126,7 @@
 */
 
 const li = (props, item, ind, chooser, list, selected) => {
-  const dataId = item.chooserId ?? `${props.el}_${item.index}`;
+  const dataId = item.id ?? `${props.el}_${item.index ?? ind}`;
   props.data[ind].id = dataId;
   if (selected) list.setAttribute('aria-activedescendant', dataId);
 
