@@ -55,8 +55,6 @@ const select = new Chooser({
       // -- active item on start
   label: 'some_label',
       // -- 'label': default "Выберите элемент:". required element. is an ARIA lable
-  group: 'some_group',
-      // -- add group to hide the names of one group
   input: {
       // -- activate input elment instead of button in header
       filter: true,
