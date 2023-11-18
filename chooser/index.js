@@ -1,13 +1,16 @@
-
 /**
   Start
   First, just copy the chooser.js and chooser.css files to the project folder.
+
   Then connect them to the head of your html file
   <script defer="defer" src="/your/path/chooser.js"></script>
   <link href="/your/path/chooser.css" rel="stylesheet">
+
   Then connect your file with scripts, such as scripts.js
   <script defer="defer" src="scripts.js"></script>
+
   and create a new Chooser instance in your file using the object with the settings.
+
   Example of a settings object
   const options = {
     el: 'select',
@@ -32,7 +35,9 @@
       item: 'some-class__item',
     }
   }
+
   const select = new Chooser(options);
+
   Complete list of settings
   const select = new Chooser({
   el: 'element',
@@ -45,8 +50,6 @@
       -- active item on start
   label: 'some_label',
       -- 'label': default "Выберите элемент:". required element. is an ARIA lable
-  group: 'some_group',
-      -- add group to hide the names of one group
   input: {
       -- activate input elment instead of button in header
       filter: true,
@@ -104,6 +107,7 @@
     someFunction(item);
   }  -- the function will be executed during the selection of the item
 });
+
   Methods
 
   select(index, true) - select element;
@@ -114,6 +118,7 @@
 
   Aattributes
   data-chooser_no_close=${id} - do not close this.checkMiss(event);
+
   Classes
   hover       - stylizing the state of hover
   focused     - stylizing the state of focus when accessing from the keyboard
@@ -128,22 +133,24 @@
 const li = (props, item, ind, chooser, list, selected) => {
   const dataId = item.id ?? `${props.el}_${item.index ?? ind}`;
   props.data[ind].id = dataId;
-  if (selected) list.setAttribute('aria-activedescendant', dataId);
+  if (selected) list.setAttribute("aria-activedescendant", dataId);
 
   let disabled = false;
-  if (item.group || props.group) {
-    props.data[ind].group = item.group ? item.group : `${props.group}_${item.index}`;
+  if (item.group) {
+    props.data[ind].group = item.group;
 
-    const check = document.querySelectorAll(`[data-chooser_group="${props.data[ind].group}"]`);
+    const check = document.querySelectorAll(
+      `[data-chooser_group="${props.data[ind].group}"]`,
+    );
     if (check) {
       check.forEach((item) => {
-        if (item.classList.contains('selected')) disabled = true;
+        if (item.classList.contains("selected")) disabled = true;
       });
     }
     if (selected) disabled = false;
   }
 
-  let attr = '';
+  let attr = "";
   if (item.attr) {
     for (let key in item.attr) {
       const newAttr = `${key}=${item.attr[key]} `;
@@ -151,7 +158,9 @@ const li = (props, item, ind, chooser, list, selected) => {
     }
   }
 
-  let group = props.data[ind].group ? `data-chooser_group=${props.data[ind].group}` : '';
+  let group = props.data[ind].group
+    ? `data-chooser_group=${props.data[ind].group}`
+    : "";
 
   chooser.data[dataId] = { ...item };
   return /*html*/ `
@@ -159,16 +168,16 @@ const li = (props, item, ind, chooser, list, selected) => {
         id="${dataId}"
 
         class="
-          ${props.classList?.item ?? ''}
-          chooser__item${disabled ? ' disabled' : ''}
-          ${selected ? 'selected' : ''}
+          ${props.classList?.item ?? ""}
+          chooser__item${disabled ? " disabled" : ""}
+          ${selected ? "selected" : ""}
         "
 
         ${attr}
         ${group}
         data-chooser_type="chooser_item"
         role="option"
-        ${selected ? 'aria-selected="true"' : ''}
+        ${selected ? 'aria-selected="true"' : ""}
       >
         ${item.value}
       </li>
@@ -177,17 +186,18 @@ const li = (props, item, ind, chooser, list, selected) => {
 
 const getTemplate = (props, chooser) => {
   let current;
-  const items = props.data.map((item, ind) => li(props, item, ind, chooser)).join('');
+  const items = props.data.map((item, ind) => li(props, item, ind, chooser))
+    .join("");
   if (props.input) {
     const id = props.input.id ?? `${props.el}_input`;
     const attr = props.input.attr
       ? Object.keys(props.input.attr)
-          .map((item) => `${item}="${props.input.attr[item]}"`)
-          .join(' ')
-      : '';
+        .map((item) => `${item}="${props.input.attr[item]}"`)
+        .join(" ")
+      : "";
     current = /*html*/ `
       <input
-        class="${props.classList.current ?? ''} chooser__input"
+        class="${props.classList.current ?? ""} chooser__input"
         id=${id}
         ${attr}
         data-chooser_type="chooser_input"
@@ -196,12 +206,12 @@ const getTemplate = (props, chooser) => {
         aria-haspopup="listbox"
         data-chooser_current
       >
-      <span class="${props.classList.icon ?? ''} chooser__icon"></span>
+      <span class="${props.classList.icon ?? ""} chooser__icon"></span>
     `;
   } else {
     current = /*html*/ `
       <button
-        class="${props.classList?.current ?? ''} chooser__current"
+        class="${props.classList?.current ?? ""} chooser__current"
         id="${props.el}_button"
         data-chooser_type="chooser_button"
         data-chooser_no_close=${props.el}
@@ -211,7 +221,7 @@ const getTemplate = (props, chooser) => {
         <span data-chooser_current>
           ${props.placeholder}
         </span>
-        <span class="${props.classList?.icon ?? ''} chooser__icon"></span>
+        <span class="${props.classList?.icon ?? ""} chooser__icon"></span>
       </button>
     `;
   }
@@ -219,15 +229,15 @@ const getTemplate = (props, chooser) => {
   return /*html*/ `
         <span
           id="${props.el}_desc"
-          class="${props.classList?.label ?? ''} chooser__desc"
+          class="${props.classList?.label ?? ""} chooser__desc"
         >
-          ${props.label ?? 'Выберите элемент:'}
+          ${props.label ?? "Выберите элемент:"}
         </span>
-        <div class="${props.classList?.wrapper ?? ''} chooser__wrapper">
+        <div class="${props.classList?.wrapper ?? ""} chooser__wrapper">
           ${current}
           <ul
             id=${props.el}_list
-            class="${props.classList?.list ?? ''} chooser__list"
+            class="${props.classList?.list ?? ""} chooser__list"
             role="listbox"
             tabindex="-1"
             aria-labelledby="${props.el}_desc"
@@ -246,9 +256,12 @@ export default class Chooser {
 
     this.$el = document.getElementById(props.el);
     this.elId = props.el;
-    this.props.placeholder = props.placeholder ?? 'Chooser';
+    this.props.placeholder = props.placeholder ?? "Chooser";
 
-    this.activeDescendant = props.current ? (props.data[props.current - 1].id ?? `${this.elId}_${props.current - 1 }`) : null;
+    this.activeDescendant = props.current
+      ? (props.data[props.current - 1].id ??
+        `${this.elId}_${props.current - 1}`)
+      : null;
     this.activeGroup = null;
     this.isOpen = false;
     this.focused = null;
@@ -258,7 +271,7 @@ export default class Chooser {
   }
 
   #render() {
-    this.$el.classList.add('chooser');
+    this.$el.classList.add("chooser");
     this.$el.innerHTML = getTemplate(this.props, this);
   }
 
@@ -271,24 +284,23 @@ export default class Chooser {
     this.onKey = this.onKey.bind(this);
     this.close = this.close.bind(this);
     this.open = this.open.bind(this);
-    this.$el.addEventListener('click', this.clickHendler);
-    this.$el.addEventListener('keydown', this.onKey);
-    this.$list = this.$el.querySelector('.chooser__list');
-    this.$list.addEventListener('keydown', this.onKey);
-    this.$current = this.$el.querySelector('[data-chooser_current]');
-    this.$icon = this.$el.querySelector('.chooser__icon');
+    this.$el.addEventListener("click", this.clickHendler);
+    this.$el.addEventListener("keydown", this.onKey);
+    this.$list = this.$el.querySelector(".chooser__list");
+    this.$list.addEventListener("keydown", this.onKey);
+    this.$current = this.$el.querySelector("[data-chooser_current]");
+    this.$icon = this.$el.querySelector(".chooser__icon");
     this.$open = [this.$el, this.$current, this.$list, this.$icon];
     if (this.activeDescendant) this.select(this.activeDescendant);
     if (this.props.input) {
-      this.$current.addEventListener('focus', this.open);
+      this.$current.addEventListener("focus", this.open);
       this.filterOnInput = this.filterOnInput.bind(this);
-      this.$current.addEventListener('input', this.filterOnInput);
+      this.$current.addEventListener("input", this.filterOnInput);
     }
     if (this.props.onSetUp) this.props.onSetUp(this.props.data);
   }
 
   getItemID(item) {
-
   }
 
   getCurrentItem() {
@@ -296,11 +308,11 @@ export default class Chooser {
   }
 
   updateList(items) {
-    let selectedVal = this.$el.querySelector('[aria-selected=true');
+    let selectedVal = this.$el.querySelector("[aria-selected=true");
     if (selectedVal) selectedVal = selectedVal.textContent.trim();
     if (!selectedVal) {
-      this.$current.textContent = '';
-      this.$list.removeAttribute('aria-activedescendant');
+      this.$current.textContent = "";
+      this.$list.removeAttribute("aria-activedescendant");
     }
     this.props.data = items.map((item) => ({ ...item }));
     this.$list.innerHTML = this.props.data
@@ -309,13 +321,13 @@ export default class Chooser {
         if (item.value == selectedVal) selected = true;
         return li(this.props, item, ind, this, this.$list, selected);
       })
-      .join('');
+      .join("");
   }
 
   filterOnInput(event) {
     let reg = false;
     if (this.props.input.numbers) reg = /[^0-9]/;
-    if (reg) event.target.value = event.target.value.replace(reg, '');
+    if (reg) event.target.value = event.target.value.replace(reg, "");
     const newItems = this.props.data.filter((item) => {
       return item.value.startsWith(event.target.value);
     });
@@ -323,7 +335,7 @@ export default class Chooser {
       .map((item, ind) => {
         return li(this.props, item, ind, this, this.$list);
       })
-      .join('');
+      .join("");
     if (!newItems.length > 0) this.close();
     else if (!this.isOpen) this.open();
   }
@@ -331,9 +343,9 @@ export default class Chooser {
   clickHendler(event) {
     event.preventDefault();
     const { chooser_type } = event.target.dataset;
-    if (chooser_type == 'chooser_button') {
+    if (chooser_type == "chooser_button") {
       this.#toggle();
-    } else if (chooser_type == 'chooser_item') {
+    } else if (chooser_type == "chooser_item") {
       this.select(event.target.id);
       this.close();
     }
@@ -345,41 +357,45 @@ export default class Chooser {
 
   resetSelected() {
     this.activeDescendant = null;
-    const $item = this.$el.querySelector('.selected');
+    const $item = this.$el.querySelector(".selected");
     if ($item) {
-      $item.classList.remove('selected');
-      $item.removeAttribute('aria-selected');
-      this.$list.removeAttribute('aria-activedescendant');
+      $item.classList.remove("selected");
+      $item.removeAttribute("aria-selected");
+      this.$list.removeAttribute("aria-activedescendant");
     }
   }
 
-  select(id, handler=false) {
-    if(handler) id = `${this.elId}_${id}`;
+  select(id, handler = false) {
+    if (handler) id = `${this.elId}_${id}`;
     if (this.props.onSelect) this.props.onSelect(this.data[id]);
     if (this.data[id].onClick) this.data[id].onClick(this.data[id]);
     this.activeDescendant = id;
     const item = this.current;
     if (this.props.input) this.$current.value = item.value;
     else this.$current.textContent = item.value;
-    this.$el.querySelectorAll('[data-chooser_type="chooser_item"]').forEach((item) => {
-      item.classList.remove('selected');
-      item.removeAttribute('aria-selected');
-    });
+    this.$el.querySelectorAll('[data-chooser_type="chooser_item"]').forEach(
+      (item) => {
+        item.classList.remove("selected");
+        item.removeAttribute("aria-selected");
+      },
+    );
     const currentEl = this.$el.querySelector(`#${id}`);
-    currentEl.classList.add('selected');
-    currentEl.setAttribute('aria-selected', true);
-    this.$list.setAttribute('aria-activedescendant', id);
-    if (this.props.group || item.group) this.disableGroup(item.group);
+    currentEl.classList.add("selected");
+    currentEl.setAttribute("aria-selected", true);
+    this.$list.setAttribute("aria-activedescendant", id);
+    if (item.group) this.disableGroup(item.group);
   }
 
   disableGroup(group) {
-    const $disbled = document.querySelectorAll(`[data-chooser_group=${this.activeGroup}]`);
+    const $disbled = document.querySelectorAll(
+      `[data-chooser_group=${this.activeGroup}]`,
+    );
     if ($disbled) {
-      $disbled.forEach((item) => item.classList.remove('disabled'));
+      $disbled.forEach((item) => item.classList.remove("disabled"));
     }
     const $group = document.querySelectorAll(`[data-chooser_group=${group}]`);
     $group.forEach((item) => {
-      if (!item.classList.contains('selected')) item.classList.add('disabled');
+      if (!item.classList.contains("selected")) item.classList.add("disabled");
     });
     this.activeGroup = group;
   }
@@ -396,75 +412,78 @@ export default class Chooser {
   }
 
   get $listBottomPos() {
-    return this.$list.getBoundingClientRect().bottom > document.documentElement.clientHeight
-      && this.$list.getBoundingClientRect().top > document.documentElement.clientHeight
-    ;
+    return this.$list.getBoundingClientRect().bottom >
+        document.documentElement.clientHeight &&
+      this.$list.getBoundingClientRect().top >
+        document.documentElement.clientHeight;
   }
 
   addHover(e) {
     this.defocus();
-    e.target.classList.add('hover');
+    e.target.classList.add("hover");
     this.focused = e.target.id;
   }
 
   removeHover() {
     this.focused = null;
-    const el = document.querySelector('.hover');
-    if (el) el.classList.remove('hover');
+    const el = document.querySelector(".hover");
+    if (el) el.classList.remove("hover");
   }
 
   open() {
-    if (this.$list.innerHTML == '') return;
+    if (this.$list.innerHTML == "") return;
     this.isOpen = true;
-    this.$open.forEach((el) => el.classList.add('open'));
-    document.addEventListener('click', this.checkMiss);
-    this.$list.addEventListener('mouseover', this.addHover);
-    this.$list.addEventListener('mouseout', this.removeHover);
+    this.$open.forEach((el) => el.classList.add("open"));
+    document.addEventListener("click", this.checkMiss);
+    this.$list.addEventListener("mouseover", this.addHover);
+    this.$list.addEventListener("mouseout", this.removeHover);
     if (this.$listBottomPos) {
       this.$list.style.bottom = window.getComputedStyle(this.$list).top;
-      this.$list.style.top = 'unset';
+      this.$list.style.top = "unset";
     }
   }
 
   close() {
     this.isOpen = false;
-    this.$open.forEach((el) => el.classList.remove('open'));
-    document.removeEventListener('click', this.checkMiss);
-    this.$list.removeEventListener('mouseover', this.addHover);
-    this.$list.removeEventListener('mouseout', this.removeHover);
+    this.$open.forEach((el) => el.classList.remove("open"));
+    document.removeEventListener("click", this.checkMiss);
+    this.$list.removeEventListener("mouseover", this.addHover);
+    this.$list.removeEventListener("mouseout", this.removeHover);
     this.defocus();
     this.removeHover();
-    if (this.$list.hasAttribute('style')) {
-      this.$list.removeAttribute('style');
+    if (this.$list.hasAttribute("style")) {
+      this.$list.removeAttribute("style");
     }
   }
 
   destroy() {
-    this.$el.removeEventListener('click', this.clickHendler);
-    this.$el.removeEventListener('keydown', this.onKey);
-    this.$list.removeEventListener('keydown', this.onKey);
+    this.$el.removeEventListener("click", this.clickHendler);
+    this.$el.removeEventListener("keydown", this.onKey);
+    this.$list.removeEventListener("keydown", this.onKey);
     this.$el.innerHTML = ``;
   }
 
   focus(id, t = 0) {
-    const hover = this.$list.querySelector('.hover');
-    if (hover) hover.classList.remove('hover');
+    const hover = this.$list.querySelector(".hover");
+    if (hover) hover.classList.remove("hover");
     this.defocus();
     const item = this.$el.querySelector(`#${id}`);
-    if (item && !item.classList.contains('disabled')) {
-      item.classList.add('focused');
+    if (item && !item.classList.contains("disabled")) {
+      item.classList.add("focused");
       this.focused = id;
     } else {
-      let checkNewCurrent = t == 0 ? this.#onKeyNextCurrent(item) : this.#onKeyNextCurrent(item, 1);
+      let checkNewCurrent = t == 0
+        ? this.#onKeyNextCurrent(item)
+        : this.#onKeyNextCurrent(item, 1);
       if (checkNewCurrent) this.focus(checkNewCurrent.id);
     }
   }
 
   defocus() {
     this.focused = null;
-    const items = this.$el.querySelectorAll('.focused');
+    const items = this.$el.querySelectorAll(".focused");
     if (items) {
-      items.forEach((element) => element.classList.remove('focused'));
+      items.forEach((element) => element.classList.remove("focused"));
     }
   }
 
@@ -484,56 +503,57 @@ export default class Chooser {
   }
 
   #onKeyNextCurrent(current, t = 0) {
-    const newCurrent = t == 0 ? current.nextElementSibling : current.previousElementSibling;
+    const newCurrent = t == 0
+      ? current.nextElementSibling
+      : current.previousElementSibling;
     if (newCurrent) {
-      if (!newCurrent.classList.contains('disabled')) return newCurrent;
+      if (!newCurrent.classList.contains("disabled")) return newCurrent;
       else return this.#onKeyNextCurrent(newCurrent, t);
     } else return false;
   }
 
   #onKeyUpOrDown(type) {
     let nowCurrent = this.$el.querySelector(`#${this.focused}`);
-    let checkNewCurrent =
-      type == 'ArrowDown'
-        ? this.#onKeyNextCurrent(nowCurrent)
-        : this.#onKeyNextCurrent(nowCurrent, 1);
+    let checkNewCurrent = type == "ArrowDown"
+      ? this.#onKeyNextCurrent(nowCurrent)
+      : this.#onKeyNextCurrent(nowCurrent, 1);
     if (checkNewCurrent) {
       this.focus(checkNewCurrent.id);
       return true;
     } else {
-      type == 'ArrowDown' ? this.focuseFirst() : this.focuseLast();
+      type == "ArrowDown" ? this.focuseFirst() : this.focuseLast();
     }
   }
 
   onKey(event) {
-    if (event.key !== 'Tab' && !this.props.input) event.preventDefault();
-    const focused =
-      this.$el.querySelector('.focused') || this.$el.querySelector(`#${this.focused}`);
+    if (event.key !== "Tab" && !this.props.input) event.preventDefault();
+    const focused = this.$el.querySelector(".focused") ||
+      this.$el.querySelector(`#${this.focused}`);
     switch (event.key) {
-      case 'Home':
+      case "Home":
         if (!this.isOpen) break;
         else this.focuseFirst();
         break;
-      case 'End':
+      case "End":
         if (!this.isOpen) break;
         else this.focuseLast();
         break;
-      case 'Escape':
+      case "Escape":
         this.close();
         break;
-      case 'Tab':
+      case "Tab":
         if (this.isOpen) this.close();
         break;
-      case ' ':
-      case 'Enter':
+      case " ":
+      case "Enter":
         if (!this.isOpen) {
           this.#checkDescendantAndOpen();
         } else if (this.isOpen) {
           this.select(this.focused);
         }
         break;
-      case 'ArrowDown':
-      case 'ArrowUp':
+      case "ArrowDown":
+      case "ArrowUp":
         if (!this.isOpen) this.#checkDescendantAndOpen();
         else if (this.open && !focused) this.#checkDescendantAndOpen();
         else this.#onKeyUpOrDown(event.key);
