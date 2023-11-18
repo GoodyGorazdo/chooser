@@ -427,7 +427,6 @@ export default class Chooser {
     currentEl.classList.add("selected");
     currentEl.setAttribute("aria-selected", true);
     this.$list.setAttribute("aria-activedescendant", id);
-    console.log(item);
     if (item.switch?.path) {
       if (item.switch.inverted) {
         this.disableSwitchGroupInverted('switch-target', 'activeSwitchGroup', item.switch.path, item.switch.name);
@@ -450,8 +449,6 @@ export default class Chooser {
     this.enableGroupAll(target, active);
     const $group = document.querySelectorAll(`[data-chooser_switch-name=${name}]`);
     $group.forEach((item) => {
-      console.log(item);
-      console.log(item.getAttribute("data-chooser_switch-target"));
       if (!item.classList.contains("selected") &&
         item.getAttribute("data-chooser_switch-target") !== group) {
         item.classList.add("disabled");
