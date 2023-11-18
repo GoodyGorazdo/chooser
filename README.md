@@ -86,6 +86,17 @@ const select = new Chooser({
       group: 'some_name',
           // -- add group to hide the names of one group
 
+      switch: {
+        name: 'some_name'
+          -- required
+        target: 'some_value'
+          -- target to be switched
+        path: 'some_value'
+          -- click element to swich target
+        inverted: boolean
+          -- if true target be enabled, and other switch targets disabled
+      }
+
       onClick(item) {
           someFunction(item);
          }
