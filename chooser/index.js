@@ -121,8 +121,8 @@
   Methods
 
   select(index, true) - select element;
-    @index - index needle element in ements array;
-    @true - obligatory;
+    index - index needle element in ements array;
+    true - obligatory;
 
   getCurrentItem() - return current item;
 
@@ -140,154 +140,145 @@
 
 */
 
-const getGroup = (item, selected) => {
-  let disabled = false;
-  let group = '';
-  const check = document.querySelectorAll(
-    `[data-chooser_group="${item.group}"]`,
-  );
-  if (check) {
-    check.forEach((item) => {
-      if (item.classList.contains("selected")) disabled = true;
-    });
-  }
-  if (selected) disabled = false;
-  group = `data-chooser_group=${item.group}`;
+const checkgroupDisabled = (groupType, groupName) => {
+  const disabled = false;
+  const check = document.querySelectorAll(`[data-chooser_${groupType}="${groupName}"]`);
+  check && check.forEach((element) => {
+    if (element.classList.contains("selected")) disabled = true;
+  });
 
-  return [group, disabled];
+  return disabled;
 }
 
-const getSwitchGroup = (item, selected) => {
-  let disabled = false;
-  let switchGroup = '';
+const getGroupAttributes = (item, selected) => {
+  const disabled = selected
+    ? false
+    : checkgroupDisabled('group', item.group);
 
+  return [`data-chooser_group=${item.group}`, disabled];
+};
+
+const getSwitchGroupAttributes = (item) => {
+  const disabled = item.switch.target
+  ? false
+  : checkgroupDisabled('switch-path', item.group);
+
+  let switchGroup = `data-chooser_switch-name=${item.switch.name}`;
   if (item.switch.target) {
-    const check = document.querySelectorAll(
-      `[data-chooser_switch-path="${item.group}"]`,
-    );
-    if (check) {
-      check.forEach((item) => {
-        if (item.classList.contains("selected")) disabled = true;
-      });
-    }
-
-    switchGroup += `data-chooser_switch-target=${item.switch.target}`;
-    if (item.switch.path) switchGroup += ' ';
+    switchGroup += ` data-chooser_switch-target=${item.switch.target}`;
   }
-
   if (item.switch.path) {
-    switchGroup += `data-chooser_switch-path=${item.switch.path}`;
+    switchGroup += ` data-chooser_switch-path=${item.switch.path}`;
   }
-
-  switchGroup += ` data-chooser_switch-name=${item.switch.name}`;
 
   return [switchGroup, disabled];
+};
+
+const getGroup = (item) => {
+  if (item.switch) {
+    return getSwitchGroupAttributes(item);
+  } else if (item.group) {
+    return getGroupAttributes(item);
+  }
+
+  return ['', false];
 }
 
-const li = (props, item, ind, chooser, list, selected) => {
+const getAttributesString = (attributes) => {
+  if (!attributes) return '';
+  return Object.entries(attributes)
+    .map(([key, value]) => `${key}="${value}"`)
+    .join(" ");
+};
+
+const createListItem = (props, item, ind, chooser, list, selected) => {
   const dataId = item.id ?? `${props.el}_${item.index ?? ind}`;
   props.data[ind].id = dataId;
   if (selected) list.setAttribute("aria-activedescendant", dataId);
-
-  let attr = "";
-  if (item.attr) {
-    for (let key in item.attr) {
-      const newAttr = `${key}=${item.attr[key]} `;
-      attr += newAttr;
-    }
-  }
-
-  let group = '';
-  let disabled = false;
-  if (item.switch) {
-    [group, disabled] = getSwitchGroup(item);
-  } else if (item.group) {
-    [group, disabled] = getGroup(item);
-  }
-
+  let attr = getAttributesString(item.attr);
+  let [group, disabled] = getGroup(item);
   chooser.data[dataId] = { ...item };
+
   return `
-      <li
-        id="${dataId}"
+    <li
+      id="${dataId}"
+      class="${props.classList?.item ?? ""} chooser__item${disabled ? " disabled" : ""} ${selected ? "selected" : ""}"
+      ${attr}
+      ${group}
+      data-chooser_type="chooser_item"
+      role="option"
+      ${selected ? 'aria-selected="true"' : ""}
+    >
+      ${item.value}
+    </li>
+  `;
+};
 
-        class="
-          ${props.classList?.item ?? ""}
-          chooser__item${disabled ? " disabled" : ""}
-          ${selected ? "selected" : ""}
-        "
+const currentInputElement = (props) => {
+  const id = props.input.id ?? `${props.el}_input`;
+  const attr = props.input.attr ? getAttributesString(props.input.attr) : "";
 
-        ${attr}
-        ${group}
-        data-chooser_type="chooser_item"
-        role="option"
-        ${selected ? 'aria-selected="true"' : ""}
-      >
-        ${item.value}
-      </li>
-    `;
+  return `
+    <input
+      class="${props.classList.current ?? ""} chooser__input"
+      id=${id}
+      ${attr}
+      data-chooser_type="chooser_input"
+      data-chooser_no_close=${props.el}
+      aria-labelledby="${props.el}_desc ${props.el}_input"
+      aria-haspopup="listbox"
+      data-chooser_current
+    >
+    <span class="${props.classList.icon ?? ""} chooser__icon"></span>
+  `;
+}
+
+const currentButtonElement = (props) => {
+  return `
+    <button
+      class="${props.classList?.current ?? ""} chooser__current"
+      id="${props.el}_button"
+      data-chooser_type="chooser_button"
+      data-chooser_no_close=${props.el}
+      aria-labelledby="${props.el}_desc ${props.el}_button"
+      aria-haspopup="listbox"
+    >
+      <span data-chooser_current>
+        ${props.placeholder}
+      </span>
+      <span class="${props.classList?.icon ?? ""} chooser__icon"></span>
+    </button>
+  `;
+}
+
+const createCurrentElement = (props) => {
+  if (props.input) {
+    return currentInputElement(props);
+  } else {
+    return currentButtonElement(props);
+  }
 };
 
 const getTemplate = (props, chooser) => {
-  let current;
-  const items = props.data.map((item, ind) => li(props, item, ind, chooser))
-    .join("");
-  if (props.input) {
-    const id = props.input.id ?? `${props.el}_input`;
-    const attr = props.input.attr
-      ? Object.keys(props.input.attr)
-        .map((item) => `${item}="${props.input.attr[item]}"`)
-        .join(" ")
-      : "";
-    current = `
-      <input
-        class="${props.classList.current ?? ""} chooser__input"
-        id=${id}
-        ${attr}
-        data-chooser_type="chooser_input"
-        data-chooser_no_close=${props.el}
-        aria-labelledby="${props.el}_desc ${props.el}_input"
-        aria-haspopup="listbox"
-        data-chooser_current
-      >
-      <span class="${props.classList.icon ?? ""} chooser__icon"></span>
-    `;
-  } else {
-    current = `
-      <button
-        class="${props.classList?.current ?? ""} chooser__current"
-        id="${props.el}_button"
-        data-chooser_type="chooser_button"
-        data-chooser_no_close=${props.el}
-        aria-labelledby="${props.el}_desc ${props.el}_button"
-        aria-haspopup="listbox"
-      >
-        <span data-chooser_current>
-          ${props.placeholder}
-        </span>
-        <span class="${props.classList?.icon ?? ""} chooser__icon"></span>
-      </button>
-    `;
-  }
-
   return `
-        <span
-          id="${props.el}_desc"
-          class="${props.classList?.label ?? ""} chooser__desc"
-        >
-          ${props.label ?? "Выберите элемент:"}
-        </span>
-        <div class="${props.classList?.wrapper ?? ""} chooser__wrapper">
-          ${current}
-          <ul
-            id=${props.el}_list
-            class="${props.classList?.list ?? ""} chooser__list"
-            role="listbox"
-            tabindex="-1"
-            aria-labelledby="${props.el}_desc"
-            >
-            ${items}
-          </ul>
-        </div>
+    <span
+      id="${props.el}_desc"
+      class="${props.classList?.label ?? ""} chooser__desc"
+    >
+      ${props.label ?? "Выберите элемент:"}
+    </span>
+    <div class="${props.classList?.wrapper ?? ""} chooser__wrapper">
+      ${createCurrentElement(props)}
+      <ul
+        id=${props.el}_list
+        class="${props.classList?.list ?? ""} chooser__list"
+        role="listbox"
+        tabindex="-1"
+        aria-labelledby="${props.el}_desc"
+      >
+        ${props.data.map((item, ind) => createListItem(props, item, ind, chooser)).join("")}
+      </ul>
+    </div>
   `;
 };
 
@@ -344,27 +335,20 @@ export default class Chooser {
     if (this.props.onSetUp) this.props.onSetUp(this.props.data);
   }
 
-  getItemID(item) {
-  }
-
   getCurrentItem() {
     return this.current;
   }
 
-  updateList(items) {
-    let selectedVal = this.$el.querySelector("[aria-selected=true");
-    if (selectedVal) selectedVal = selectedVal.textContent.trim();
-    if (!selectedVal) {
-      this.$current.textContent = "";
-      this.$list.removeAttribute("aria-activedescendant");
-    }
-    this.props.data = items.map((item) => ({ ...item }));
-    this.$list.innerHTML = this.props.data
-      .map((item, ind) => {
-        let selected = false;
-        if (item.value == selectedVal) selected = true;
-        return li(this.props, item, ind, this, this.$list, selected);
-      })
+  filterItemsByValueStart(value) {
+    this.props.data.filter((item) => {
+      return item.value.startsWith(value);
+    });
+  }
+
+  getFilteredItemsTemplate(items) {
+    return items.map((item, ind) => {
+      return li(this.props, item, ind, this, this.$list);
+    })
       .join("");
   }
 
@@ -372,14 +356,8 @@ export default class Chooser {
     let reg = false;
     if (this.props.input.numbers) reg = /[^0-9]/;
     if (reg) event.target.value = event.target.value.replace(reg, "");
-    const newItems = this.props.data.filter((item) => {
-      return item.value.startsWith(event.target.value);
-    });
-    this.$list.innerHTML = newItems
-      .map((item, ind) => {
-        return li(this.props, item, ind, this, this.$list);
-      })
-      .join("");
+    const newItems = this.filterItemsByValueStart(event.target.value)
+    this.$list.innerHTML = this.getFilteredItemsTemplate(newItems);
     if (!newItems.length > 0) this.close();
     else if (!this.isOpen) this.open();
   }
@@ -399,41 +377,48 @@ export default class Chooser {
     return this.props.data.find((item) => item.id == this.activeDescendant);
   }
 
-  resetSelected() {
-    this.activeDescendant = null;
-    const $item = this.$el.querySelector(".selected");
-    if ($item) {
-      $item.classList.remove("selected");
-      $item.removeAttribute("aria-selected");
-      this.$list.removeAttribute("aria-activedescendant");
-    }
-  }
-
-  select(id, handler = false) {
-    if (handler) id = `${this.elId}_${id}`;
+  runCallbacks(id) {
     if (this.props.onSelect) this.props.onSelect(this.data[id]);
     if (this.data[id].onClick) this.data[id].onClick(this.data[id]);
-    this.activeDescendant = id;
-    const item = this.current;
-    if (this.props.input) this.$current.value = item.value;
-    else this.$current.textContent = item.value;
+  }
+
+  disableSelected() {
     this.$el.querySelectorAll('[data-chooser_type="chooser_item"]').forEach(
       (item) => {
         item.classList.remove("selected");
         item.removeAttribute("aria-selected");
       },
     );
+  }
+
+  enableSelected(id) {
     const currentEl = this.$el.querySelector(`#${id}`);
     currentEl.classList.add("selected");
     currentEl.setAttribute("aria-selected", true);
     this.$list.setAttribute("aria-activedescendant", id);
+  }
+
+  setCurrentText() {
+    if (this.props.input) this.$current.value = this.current.value;
+    else this.$current.textContent = this.current.value;
+  }
+
+  select(id, handler = false) {
+    if (handler) id = `${this.elId}_${id}`;
+    this.activeDescendant = id;
+    this.disableSelected();
+    this.setCurrentText();
+    this.runCallbacks(id);
+    this.enableSelected(id);
+    this.disableSelectedGroup(this.current);
+  }
+
+  disableSelectedGroup(item) {
     if (item.switch?.path) {
-      if (item.switch.inverted) {
-        this.disableSwitchGroupInverted('switch-target', 'activeSwitchGroup', item.switch.path, item.switch.name);
-      } else {
-        this.disableGroup('switch-target', 'activeSwitchGroup', item.switch.path);
-      }
-    } else if (item.group) this.disableGroup("group", "activeGroup", item.group);
+      this.disableSwitchGroup(item);
+    } else if (item.group) {
+      this.disableGroup("group", "activeGroup", item.group);
+    }
   }
 
   disableGroup(target, active, group) {
@@ -445,9 +430,17 @@ export default class Chooser {
     });
   }
 
-  disableSwitchGroupInverted(target, active, group, name) {
-    this.enableGroupAll(target, active);
-    const $group = document.querySelectorAll(`[data-chooser_switch-name=${name}]`);
+  disableSwitchGroup(item) {
+    if (item.switch.inverted) {
+      this.disableSwitchGroupInverted(item.switch.path, item.switch.name);
+    } else {
+      this.disableGroup('switch-target', 'activeSwitchGroup', item.switch.path);
+    }
+  }
+
+  disableSwitchGroupInverted(group, name) {
+    this.enableSwitchGroupInverted(name);
+    const $group = document.querySelectorAll(`[data-chooser_switch-name=${name}][data-chooser_switch-target]`);
     $group.forEach((item) => {
       if (!item.classList.contains("selected") &&
         item.getAttribute("data-chooser_switch-target") !== group) {
@@ -455,7 +448,13 @@ export default class Chooser {
       }
     });
 
-    this[active] = group;
+    this.activeSwitchGroup = group;
+  }
+
+  enableSwitchGroupInverted(name) {
+    document.querySelectorAll(`[data-chooser_switch-name=${name}]`).forEach(item => {
+        item.classList.remove("disabled");
+    });
   }
 
   enableGroupAll(target, active) {
@@ -463,7 +462,6 @@ export default class Chooser {
     if ($disabled) {
       $disabled.forEach((item) => item.classList.remove("disabled"));
     }
-
   }
 
   #toggle() {
@@ -496,25 +494,36 @@ export default class Chooser {
     if (el) el.classList.remove("hover");
   }
 
+  checkBottomPos() {
+    if (!this.$listBottomPos) return;
+    this.$list.style.bottom = window.getComputedStyle(this.$list).top;
+    this.$list.style.top = "unset";
+  }
+
+  setOpenedListeners() {
+    document.addEventListener("click", this.checkMiss);
+    this.$list.addEventListener("mouseover", this.addHover);
+    this.$list.addEventListener("mouseout", this.removeHover);
+  }
+
+  removeOpenedListeners() {
+    document.removeEventListener("click", this.checkMiss);
+    this.$list.removeEventListener("mouseover", this.addHover);
+    this.$list.removeEventListener("mouseout", this.removeHover);
+  }
+
   open() {
     if (this.$list.innerHTML == "") return;
     this.isOpen = true;
     this.$open.forEach((el) => el.classList.add("open"));
-    document.addEventListener("click", this.checkMiss);
-    this.$list.addEventListener("mouseover", this.addHover);
-    this.$list.addEventListener("mouseout", this.removeHover);
-    if (this.$listBottomPos) {
-      this.$list.style.bottom = window.getComputedStyle(this.$list).top;
-      this.$list.style.top = "unset";
-    }
+    this.setOpenedListeners();
+    this.checkBottomPos();
   }
 
   close() {
     this.isOpen = false;
     this.$open.forEach((el) => el.classList.remove("open"));
-    document.removeEventListener("click", this.checkMiss);
-    this.$list.removeEventListener("mouseover", this.addHover);
-    this.$list.removeEventListener("mouseout", this.removeHover);
+    this.removeOpenedListeners();
     this.defocus();
     this.removeHover();
     if (this.$list.hasAttribute("style")) {
