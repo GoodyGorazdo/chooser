@@ -511,6 +511,8 @@ export default class Chooser {
     this.multipleList = [];
     this.$el.querySelectorAll('[data-chooser_type="chooser_item"]')
       .forEach(item => item.classList.remove('selected'));
+    this.$el.querySelectorAll('[data-chooser_type="chooser_item"]')
+      .forEach(item => item.classList.remove('disabled'));
   }
 
   #toggle() {
