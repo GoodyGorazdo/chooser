@@ -119,7 +119,7 @@
 */
 
 const checkgroupDisabled = (groupName) => {
-  const disabled = false;
+  let disabled = false;
   const check = document.querySelectorAll(`[data-chooser_group="${groupName}"]`);
   check && check.forEach((element) => {
     if (element.classList.contains("selected")) disabled = true;
